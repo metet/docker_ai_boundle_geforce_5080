@@ -33,12 +33,11 @@ RUN git clone https://github.com/comfyanonymous/ComfyUI.git
 WORKDIR /app/ComfyUI
 RUN pip install -r requirements.txt
 # RUN pip install -r manager_requirements.txt
+
 # (Optional) Clean up pip cache to reduce image size
 RUN pip cache purge
 
 EXPOSE 8188
-
-
 
 # Run entrypoint first, then start ComfyUI
 ENTRYPOINT ["/entrypoint.sh"]
