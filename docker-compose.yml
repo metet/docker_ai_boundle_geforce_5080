@@ -1,0 +1,61 @@
+services:
+  ollama:
+    build: ./ollama
+    ports:
+      - "11434:11434"
+    environment:
+      - OLLAMA_MODELS=/models
+    volumes:
+    - /home/metet/ollama-models:/models
+    gpus: all
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "ollama list >/dev/null 2>&1 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  open-webui:
+    # Consider pinning to a specific version tag later instead of :main
+    image: ghcr.io/open-webui/open-webui:main
+    ports:
+      - "3000:8080"
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+    volumes:
+      - openwebui_data:/app/backend/data
+    restart: unless-stopped
+    depends_on:
+      ollama:
+        condition: service_healthy
+
+  comfyui:
+    build: ./comfyui
+    ports:
+      - "8188:8188"
+    volumes:
+      # persist your models, output, and settings:
+      - /home/metet/comfy/models:/app/ComfyUI/models
+      # persist your output images:
+      - /home/metet/comfy/output:/app/ComfyUI/output
+      # persist all your settings & extra nodes:
+      - /home/metet/comfy/settings:/app/ComfyUI/user/default:rw
+      # persist just your saved flows (overrides the workflows/ in default):
+      - /home/metet/comfy/flows:/app/ComfyUI/user/default/workflows:rw
+    gpus: all
+    restart: unless-stopped
+    # Optional: helps some workloads avoid shared memory issues
+    shm_size: "2gb"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8188', timeout=2).read()\" >/dev/null 2>&1 || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  ollama_data:
+  openwebui_data:
+  comfyui_models:
+  comfyui_output:
+  comfyui_input:
+  comfyui_custom_nodes:
