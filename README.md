@@ -1,4 +1,4 @@
-⚠️ Deprecated — This repository has been retired. The AI apps now run separately in the new repository: metet/blackwell-comfy-docker. For migration notes and continuing development please see that repo.
+⚠️ Deprecated — This repository has been retired. The AI apps now run separately in the new repository: https://github.com/metet/blackwell-comfy-docker. For migration notes and continuing development please see that repo.
 
 # 🚀 Docker AI Stack: Ollama + Open WebUI + ComfyUI (RTX 5080 / Ubuntu)
 
